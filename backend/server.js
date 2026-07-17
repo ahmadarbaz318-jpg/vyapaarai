@@ -26,12 +26,29 @@ app.get('/api/health', (req, res) => {
   res.json({ success: true, message: 'Vyapaar AI backend is running.', timestamp: new Date().toISOString() });
 });
 
+import path from 'path';
+import { fileURLToPath } from 'url';
+
+const __filename = fileURLToPath(import.meta.url);
+const __dirname = path.dirname(__filename);
+
 app.use('/api/auth', authRoutes);
 app.use('/api/products', productRoutes);
 app.use('/api/sales', saleRoutes);
 app.use('/api/analytics', analyticsRoutes);
 app.use('/api/ai', aiRoutes);
 app.use('/api/settings', settingsRoutes);
+
+// Serve frontend static files in production
+if (process.env.NODE_ENV === 'production') {
+  app.use(express.static(path.join(__dirname, '../frontend/dist')));
+  app.get('*', (req, res, next) => {
+    if (req.path.startsWith('/api')) {
+      return next();
+    }
+    res.sendFile(path.resolve(__dirname, '../frontend/dist', 'index.html'));
+  });
+}
 
 app.use(notFound);
 app.use(errorHandler);
