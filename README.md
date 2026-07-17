@@ -1,3 +1,4 @@
+<<<<<<< HEAD
 # Vyapaar AI — Smart Business Digital Assistant 🚀
 
 An AI-powered digital assistant that helps small business owners (grocery shops, pharmacies, cafés, clothing stores, stationery shops, hardware stores, and other local retailers) manage inventory, record sales, and get AI-powered business advice — with **no technical knowledge required**.
@@ -158,3 +159,7 @@ All endpoints are prefixed with `/api` and (except auth) require `Authorization:
 - Clean MVC backend, no code duplication
 - Seeded demo data so the app is instantly demo-ready
 
+=======
+# vyapaarai
+Vyapaar AI is a full-stack retail management app for small shops. It includes JWT auth, inventory management, billing, sales history, analytics dashboards, and an AI business advisor powered by Google Gemini (with fallback logic if no API key is configured). Ideal for grocery shops, pharmacies, cafes, clothing stores, and local retailer
+>>>>>>> e6d0057488872be4ef4af5b47d56f54b7ea85f07
