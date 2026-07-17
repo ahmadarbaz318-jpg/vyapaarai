@@ -126,15 +126,39 @@ async function seed() {
       ['Harpic 500ml', 'Household', 99, 75, 4, 10],
     ];
 
+    const imageMap = {
+      'Basmati Rice 5kg': 'https://images.unsplash.com/photo-1586201375761-83865001e31c?w=400&auto=format&fit=crop&q=80',
+      'Toor Dal 1kg': 'https://images.unsplash.com/photo-1547058886-af779930f7c1?w=400&auto=format&fit=crop&q=80',
+      'Sunflower Oil 1L': 'https://images.unsplash.com/photo-1474979266404-7eaacbcd87c5?w=400&auto=format&fit=crop&q=80',
+      'Wheat Atta 10kg': 'https://images.unsplash.com/photo-1574323347407-f5e1ad6d020b?w=400&auto=format&fit=crop&q=80',
+      'Sugar 1kg': 'https://images.unsplash.com/photo-1581798459219-318e76aecc7b?w=400&auto=format&fit=crop&q=80',
+      'Tea Powder 250g': 'https://images.unsplash.com/photo-1576092768241-dec231879fc3?w=400&auto=format&fit=crop&q=80',
+      'Coffee Powder 200g': 'https://images.unsplash.com/photo-1514432324607-a09d9b4aefdd?w=400&auto=format&fit=crop&q=80',
+      'Colgate Toothpaste': 'https://images.unsplash.com/photo-1559599101-f09722fb4948?w=400&auto=format&fit=crop&q=80',
+      'Dettol Soap Pack': 'https://images.unsplash.com/photo-1607006342411-9a905574572d?w=400&auto=format&fit=crop&q=80',
+      'Parle-G Biscuit': 'https://images.unsplash.com/photo-1558961363-fa8fdf82db35?w=400&auto=format&fit=crop&q=80',
+      'Lays Chips 52g': 'https://images.unsplash.com/photo-1566478989037-eec170784d0b?w=400&auto=format&fit=crop&q=80',
+      'Maggi Noodles Pack': 'https://images.unsplash.com/photo-1612966608963-478a8ed57e8f?w=400&auto=format&fit=crop&q=80',
+      'Amul Milk 1L': 'https://images.unsplash.com/photo-1550583724-b2692b85b150?w=400&auto=format&fit=crop&q=80',
+      'Amul Butter 100g': 'https://images.unsplash.com/photo-1589985270826-4b7bb135bc9d?w=400&auto=format&fit=crop&q=80',
+      'Britannia Bread': 'https://images.unsplash.com/photo-1509440159596-0249088772ff?w=400&auto=format&fit=crop&q=80',
+      'Notebook 200 pages': 'https://images.unsplash.com/photo-1531346878377-a5be20888e57?w=400&auto=format&fit=crop&q=80',
+      'Blue Ball Pen': 'https://images.unsplash.com/photo-1583485088034-697b5bc54ccd?w=400&auto=format&fit=crop&q=80',
+      'Surf Excel 1kg': 'https://images.unsplash.com/photo-1607613009820-a29f7bb81c04?w=400&auto=format&fit=crop&q=80',
+      'Vim Dishwash Bar': 'https://images.unsplash.com/photo-1585811630202-798586afc45b?w=400&auto=format&fit=crop&q=80',
+      'Harpic 500ml': 'https://images.unsplash.com/photo-1584622650111-993a426fbf0a?w=400&auto=format&fit=crop&q=80'
+    };
+
     // Insert products
     const productIds = [];
     for (const [name, category, price, cost, quantity, threshold] of products) {
+      const imageUrl = imageMap[name] || `https://api.dicebear.com/7.x/shapes/svg?seed=${encodeURIComponent(name)}`;
       const result = db.prepare(
         `INSERT INTO products (user_id, name, category, price, cost, quantity, low_stock_threshold, image)
          VALUES (?, ?, ?, ?, ?, ?, ?, ?)`
       ).run(
         userId, name, category, price, cost, quantity, threshold,
-        `https://api.dicebear.com/7.x/shapes/svg?seed=${encodeURIComponent(name)}`
+        imageUrl
       );
       productIds.push({ id: result.lastInsertRowid, name, price, cost, quantity });
     }

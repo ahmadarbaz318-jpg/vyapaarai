@@ -1,6 +1,6 @@
 import React, { useEffect, useState } from 'react';
 import { motion } from 'framer-motion';
-import { FiSearch, FiPlus, FiMinus, FiTrash2, FiShoppingCart, FiCheckCircle } from 'react-icons/fi';
+import { FiSearch, FiPlus, FiMinus, FiTrash2, FiShoppingCart, FiCheckCircle, FiMic, FiMicOff } from 'react-icons/fi';
 import toast from 'react-hot-toast';
 import Layout from '../components/Layout.jsx';
 import EmptyState from '../components/EmptyState.jsx';
@@ -16,6 +16,7 @@ export default function Sales() {
   const [paymentMethod, setPaymentMethod] = useState('Cash');
   const [submitting, setSubmitting] = useState(false);
   const [lastInvoice, setLastInvoice] = useState(null);
+  const [isListening, setIsListening] = useState(false);
 
   useEffect(() => {
     setLoading(true);
@@ -70,15 +71,126 @@ export default function Sales() {
     }
   };
 
+  const parseVoiceCommand = (text) => {
+    const cleanText = text.toLowerCase();
+    
+    // Check for utility commands
+    if (cleanText.includes('clear') || cleanText.includes('hatao sab') || cleanText.includes('reset')) {
+      setCart([]);
+      toast.success("Cart cleared.");
+      return;
+    }
+    
+    if (cleanText.includes('checkout') || cleanText.includes('complete') || cleanText.includes('bill generate') || cleanText.includes('done') || cleanText.includes('bhugtan')) {
+      handleCheckout();
+      return;
+    }
+    
+    let isRemove = cleanText.includes('remove') || cleanText.includes('hatao') || cleanText.includes('delete');
+    
+    // Match numbers in text
+    let quantity = 1;
+    const numberMatches = cleanText.match(/\d+/);
+    if (numberMatches) {
+      quantity = parseInt(numberMatches[0]);
+    } else {
+      if (cleanText.includes('one') || cleanText.includes('ek')) quantity = 1;
+      else if (cleanText.includes('two') || cleanText.includes('do')) quantity = 2;
+      else if (cleanText.includes('three') || cleanText.includes('teen')) quantity = 3;
+      else if (cleanText.includes('four') || cleanText.includes('chaar')) quantity = 4;
+      else if (cleanText.includes('five') || cleanText.includes('paanch')) quantity = 5;
+    }
+    
+    // Match product name
+    const foundProduct = products.find(p => {
+      const name = p.name.toLowerCase();
+      return cleanText.includes(name) || name.split(' ').some(word => word.length > 2 && cleanText.includes(word));
+    });
+    
+    if (foundProduct) {
+      if (isRemove) {
+        removeFromCart(foundProduct.id);
+        toast.success(`Removed ${foundProduct.name} from cart.`);
+      } else {
+        // Add to cart with quantity
+        setCart((prev) => {
+          const existing = prev.find((i) => i.productId === foundProduct.id);
+          const currentQty = existing ? existing.quantity : 0;
+          const targetQty = currentQty + quantity;
+          if (targetQty > foundProduct.quantity) {
+            toast.error(`Only ${foundProduct.quantity} units of ${foundProduct.name} available.`);
+            return prev;
+          }
+          toast.success(`Added ${quantity} × ${foundProduct.name} to cart.`);
+          if (existing) {
+            return prev.map((i) => (i.productId === foundProduct.id ? { ...i, quantity: targetQty } : i));
+          }
+          return [...prev, { productId: foundProduct.id, name: foundProduct.name, price: foundProduct.price, quantity, maxQty: foundProduct.quantity }];
+        });
+      }
+    } else {
+      toast.error(`Could not match product in command: "${text}"`);
+    }
+  };
+
+  const startSpeechRecognition = () => {
+    const SpeechRecognition = window.SpeechRecognition || window.webkitSpeechRecognition;
+    if (!SpeechRecognition) {
+      toast.error("Speech recognition is not supported in this browser. Please use Chrome or Edge.");
+      return;
+    }
+    const rec = new SpeechRecognition();
+    rec.lang = 'en-US';
+    rec.continuous = false;
+    rec.interimResults = false;
+    
+    rec.onstart = () => {
+      setIsListening(true);
+      toast('Listening... Try saying "Add 2 Milk" or "Remove Milk" or "Clear Cart"', { icon: '🎙️' });
+    };
+    
+    rec.onresult = (e) => {
+      const text = e.results[0][0].transcript;
+      toast(`Heard: "${text}"`, { icon: '🗣️' });
+      parseVoiceCommand(text);
+    };
+    
+    rec.onerror = (e) => {
+      console.error(e);
+      toast.error("Voice input error. Try again.");
+      setIsListening(false);
+    };
+    
+    rec.onend = () => {
+      setIsListening(false);
+    };
+    
+    rec.start();
+  };
+
   const currencyFmt = (v) => `₹${Number(v).toLocaleString('en-IN')}`;
 
   return (
     <Layout title="New Sale" subtitle="Select products and create an invoice">
       <div className="grid lg:grid-cols-3 gap-6">
         <div className="lg:col-span-2">
-          <div className="relative mb-5">
-            <FiSearch className="absolute left-3.5 top-1/2 -translate-y-1/2 text-slate-400" />
-            <input value={search} onChange={(e) => setSearch(e.target.value)} placeholder="Search products to add..." className="input-field pl-10" />
+          <div className="flex gap-3 mb-5">
+            <div className="relative flex-1">
+              <FiSearch className="absolute left-3.5 top-1/2 -translate-y-1/2 text-slate-400" />
+              <input value={search} onChange={(e) => setSearch(e.target.value)} placeholder="Search products to add..." className="input-field pl-10" />
+            </div>
+            <button
+              type="button"
+              onClick={startSpeechRecognition}
+              className={`w-12 h-12 rounded-xl border flex items-center justify-center transition shadow-sm shrink-0 ${
+                isListening 
+                  ? 'bg-red-500 border-red-500 text-white animate-pulse' 
+                  : 'bg-white hover:bg-slate-50 text-slate-600 dark:bg-slate-800 dark:hover:bg-slate-700 dark:text-slate-200'
+              }`}
+              title="Voice Billing Assistant"
+            >
+              {isListening ? <FiMicOff className="text-xl" /> : <FiMic className="text-xl" />}
+            </button>
           </div>
 
           {loading ? <LoadingSpinner /> : products.length === 0 ? (

@@ -108,7 +108,7 @@ export default function Settings() {
                   <FiMoon /> Dark
                 </button>
               </div>
-              <p className="text-xs text-slate-400 mt-1.5">Dark mode is coming soon — your preference will be saved.</p>
+              <p className="text-xs text-slate-400 mt-1.5">Select your preferred system theme layout.</p>
             </div>
           </div>
         </div>

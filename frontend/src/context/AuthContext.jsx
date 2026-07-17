@@ -1,6 +1,7 @@
 // Provides authentication state (user, token) and login/register/logout actions app-wide.
 import React, { createContext, useContext, useState, useEffect } from 'react';
 import api from '../api/axios.js';
+import { getSavedTheme, applyTheme } from '../utils/theme';
 
 const AuthContext = createContext(null);
 
@@ -13,6 +14,20 @@ export function AuthProvider({ children }) {
     const savedUser = localStorage.getItem('vyapaar_user');
     if (token && savedUser) {
       setUser(JSON.parse(savedUser));
+      // Fetch user settings to apply their preferred theme
+      api.get('/settings')
+        .then((res) => {
+          if (res.data?.settings?.theme) {
+            applyTheme(res.data.settings.theme);
+          }
+        })
+        .catch(() => {
+          const savedTheme = getSavedTheme();
+          if (savedTheme) applyTheme(savedTheme);
+        });
+    } else {
+      const savedTheme = getSavedTheme();
+      if (savedTheme) applyTheme(savedTheme || 'light');
     }
     setLoading(false);
   }, []);
@@ -22,6 +37,18 @@ export function AuthProvider({ children }) {
     localStorage.setItem('vyapaar_token', data.token);
     localStorage.setItem('vyapaar_user', JSON.stringify(data.user));
     setUser(data.user);
+    
+    // Fetch settings and apply theme
+    try {
+      const res = await api.get('/settings');
+      if (res.data?.settings?.theme) {
+        applyTheme(res.data.settings.theme);
+      }
+    } catch (e) {
+      const savedTheme = getSavedTheme();
+      if (savedTheme) applyTheme(savedTheme);
+    }
+    
     return data;
   };
 
@@ -30,6 +57,7 @@ export function AuthProvider({ children }) {
     localStorage.setItem('vyapaar_token', data.token);
     localStorage.setItem('vyapaar_user', JSON.stringify(data.user));
     setUser(data.user);
+    applyTheme('light'); // Default to light on new registration
     return data;
   };
 

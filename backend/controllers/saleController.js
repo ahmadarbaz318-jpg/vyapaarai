@@ -13,11 +13,11 @@ export function createSale(req, res, next) {
     return res.status(400).json({ success: false, message: 'At least one product item is required.' });
   }
 
-  const transaction = db.transaction(() => {
-    let totalAmount = 0;
-    let totalProfit = 0;
-    const resolvedItems = [];
+  let totalAmount = 0;
+  let totalProfit = 0;
+  const resolvedItems = [];
 
+  try {
     for (const item of items) {
       const product = db.prepare('SELECT * FROM products WHERE id = ? AND user_id = ?').get(item.productId, req.userId);
       if (!product) {
@@ -62,13 +62,8 @@ export function createSale(req, res, next) {
       updateStock.run(qty, product.id);
     }
 
-    return { saleId: saleInfo.lastInsertRowid, invoiceNumber, totalAmount, totalProfit };
-  });
-
-  try {
-    const result = transaction();
-    const sale = db.prepare('SELECT * FROM sales WHERE id = ?').get(result.saleId);
-    const saleItems = db.prepare('SELECT * FROM sale_items WHERE sale_id = ?').all(result.saleId);
+    const sale = db.prepare('SELECT * FROM sales WHERE id = ?').get(saleInfo.lastInsertRowid);
+    const saleItems = db.prepare('SELECT * FROM sale_items WHERE sale_id = ?').all(saleInfo.lastInsertRowid);
     res.status(201).json({ success: true, message: 'Sale recorded successfully.', sale: { ...sale, items: saleItems } });
   } catch (err) {
     next(err);

@@ -114,32 +114,31 @@ export default function Landing() {
               </div>
             </motion.div>
 
-            <motion.div initial={{ opacity: 0, scale: 0.92 }} animate={{ opacity: 1, scale: 1 }} transition={{ duration: 0.7, delay: 0.2 }} className="relative">
-              <div className="glass-dark rounded-2xl p-6 shadow-2xl float-anim">
-                <div className="flex items-center justify-between mb-5">
-                  <p className="text-white font-semibold">Today's Overview</p>
-                  <span className="text-xs px-2.5 py-1 rounded-full bg-emerald-400/20 text-emerald-300">Live</span>
+            <motion.div initial={{ opacity: 0, scale: 0.92 }} animate={{ opacity: 1, scale: 1 }} transition={{ duration: 0.7, delay: 0.2 }} className="relative flex justify-center items-center">
+              {/* Premium Generated Graphic */}
+              <img src="/hero.png" alt="Vyapaar AI Dashboard Illustration" className="w-full max-w-[500px] h-auto rounded-3xl shadow-2xl border border-white/10 opacity-90 object-cover" />
+              
+              {/* Floating Overlap Card */}
+              <div className="absolute -bottom-6 -left-6 bg-slate-950/80 backdrop-blur-md border border-white/10 rounded-2xl p-5 shadow-2xl float-anim max-w-[280px] hidden sm:block">
+                <div className="flex items-center justify-between mb-4">
+                  <p className="text-white font-semibold text-sm">Today's Overview</p>
+                  <span className="text-[10px] px-2 py-0.5 rounded-full bg-emerald-400/20 text-emerald-300">Live</span>
                 </div>
-                <div className="grid grid-cols-2 gap-3 mb-5">
-                  <div className="bg-white/5 rounded-xl p-4">
-                    <p className="text-blue-200 text-xs">Revenue</p>
-                    <p className="text-white text-xl font-bold mt-1">₹8,420</p>
+                <div className="grid grid-cols-2 gap-2 mb-4">
+                  <div className="bg-white/5 rounded-lg p-2.5">
+                    <p className="text-blue-200 text-[10px]">Revenue</p>
+                    <p className="text-white text-md font-bold mt-0.5">₹8,420</p>
                   </div>
-                  <div className="bg-white/5 rounded-xl p-4">
-                    <p className="text-blue-200 text-xs">Profit</p>
-                    <p className="text-white text-xl font-bold mt-1">₹2,180</p>
+                  <div className="bg-white/5 rounded-lg p-2.5">
+                    <p className="text-blue-200 text-[10px]">Profit</p>
+                    <p className="text-white text-md font-bold mt-0.5">₹2,180</p>
                   </div>
                 </div>
-                <div className="bg-white/5 rounded-xl p-4 flex items-end gap-1.5 h-24">
-                  {[40, 65, 45, 80, 55, 90, 70].map((h, i) => (
-                    <div key={i} className="flex-1 rounded-t-md bg-gradient-to-t from-teal-400 to-sky-400" style={{ height: `${h}%` }} />
-                  ))}
-                </div>
-                <div className="mt-4 flex items-center gap-2 bg-white/5 rounded-xl p-3">
-                  <div className="w-8 h-8 rounded-lg bg-gradient-accent flex items-center justify-center text-white text-sm shrink-0">
+                <div className="flex items-center gap-2 bg-white/5 rounded-lg p-2">
+                  <div className="w-6 h-6 rounded-md bg-gradient-accent flex items-center justify-center text-white text-[10px] shrink-0">
                     <FiCpu />
                   </div>
-                  <p className="text-xs text-blue-100">"Restock Sunflower Oil — only 8 units left."</p>
+                  <p className="text-[9px] text-blue-100">"Restock Sunflower Oil — only 8 units left."</p>
                 </div>
               </div>
             </motion.div>
