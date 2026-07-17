@@ -5,7 +5,7 @@ import { motion } from 'framer-motion';
 
 export default function Layout({ children, title, subtitle }) {
   return (
-    <div className="flex min-h-screen bg-bgsoft">
+    <div className="flex flex-col lg:flex-row min-h-screen bg-bgsoft">
       <Sidebar />
       <div className="flex-1 min-w-0">
         <Topbar title={title} subtitle={subtitle} />
