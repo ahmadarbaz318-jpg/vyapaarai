@@ -46,11 +46,6 @@ export function register(req, res, next) {
       VALUES (?, ?, ?, 'INR', 'light', 10)
     `).run(info.lastInsertRowid, businessName.trim(), ownerName.trim());
 
-    db.prepare(`
-      INSERT INTO business_settings (user_id, business_name, owner_name, currency, theme, low_stock_threshold)
-      VALUES (?, ?, ?, 'INR', 'light', 10)
-    `).run(info.lastInsertRowid, businessName.trim(), ownerName.trim());
-
     // Select product catalog based on businessType
     const type = businessType?.toLowerCase() || 'general';
     let defaultProducts = [];
